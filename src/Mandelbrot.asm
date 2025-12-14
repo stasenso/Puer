@@ -41,11 +41,18 @@ WinMain endp
 WndProc proc hWnd:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
     LOCAL hDC:HDC    
     .if uMsg==WM_DESTROY           ; если пользователь закpывает окно
+        invoke SetThreadExecutionState,ES_CONTINUOUS
         invoke PostQuitMessage,NULL ; выходим из пpогpаммы
     .elseif uMsg==WM_CREATE
-
-
-
+        ;Запрещаем переход в сон и отключение дисплея
+        invoke SetThreadExecutionState,ES_CONTINUOUS or ES_SYSTEM_REQUIRED or ES_DISPLAY_REQUIRED
+        .if rax ==-1
+            invoke PostQuitMessage,NULL ; выходим из пpогpаммы
+        .else
+            mov rax,0
+            ret
+        .endif
+        
     .elseif uMsg==WM_PAINT
         invoke myPaint,hWnd
     .elseif uMsg==WM_ERASEBKGND
