@@ -1,4 +1,6 @@
 include /masm64/include64/masm64rt.inc
+include /masm64/include64/user32.inc
+includelib /masm64/lib64/user32.lib
 ;______________________Прототипы__________________________
 WinMain proto :HINSTANCE,:HINSTANCE,:LPSTR,:QWORD
 
@@ -8,6 +10,30 @@ myDraw proto nSegment:DWORD ;принимаю параметр с колличе
 .data?
 hInstance HINSTANCE ?   ; Хэндл нашей пpогpаммы
 CommandLine LPSTR ?
+
+
+NOTIFYICONDATAW STRUCT
+  cbSize            DWORD      ?
+  hwnd              DWORD      ?
+  uID               DWORD      ?
+  uFlags            DWORD      ?
+  uCallbackMessage  DWORD      ?
+  hIcon             DWORD      ?
+  szTip             WORD 64 dup (?)
+                    WORD 64 dup (?)
+  dwState           DWORD      ?
+  dwStateMask       DWORD      ?
+  szInfo            WORD 256 dup(?)
+  union DUMMYUNIONNAME
+  uTimeout          DWORD      ?
+  uVersion          DWORD      ?
+  ends
+  szInfoTitle       WORD 64 dup(?)
+  dwInfoFlags       DWORD      ?
+  guidItem          GUID <>
+  hBalloonIcon      DWORD      ?
+NOTIFYICONDATAW ENDS
+
 BITMAPINFOHEADER STRUCT
     biSize DWORD ?;
     biWidth LONG ?;
@@ -32,6 +58,8 @@ BITMAPINFO STRUCT
   bmiColors  RGBQUAD <>
 BITMAPINFO ENDS
 
+note NOTIFYICONDATAW <>
+hPopupMenu dq ?
 
 ;_______________________________________________________
 .data
@@ -42,6 +70,11 @@ IDT_UPDTIMER    EQU 111
 wc  WNDCLASSEX <sizeof WNDCLASSEX,CS_HREDRAW or CS_VREDRAW,WndProc,0,0,?,?,?,COLOR_WINDOW+1,NULL,szClassName,?>
 bmi BITMAPINFO <>
 rc RECT <>
+RestoreString db "&Restore",0
+ExitString   db "E&xit Program",0
 
+IDI_TRAY equ 0
+IDM_RESTORE equ 1000
 
+IDM_EXIT equ 1010
 

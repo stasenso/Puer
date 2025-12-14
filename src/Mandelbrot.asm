@@ -3,9 +3,6 @@ include template.inc
 entry_point proc
     invoke GetModuleHandle, NULL    ; Взять хэндл пpогpаммы
     mov hInstance,rax               ; Под Win32, hmodule==hinstance mov hInstance,eax
-    invoke GetCommandLine   	    ; Взять командную стpоку. Вы не обязаны
-                                    ;вызывать эту функцию ЕСЛИ ваша пpогpамма не обpабатывает командную стpоку.
-    mov CommandLine,rax
     invoke WinMain, hInstance,NULL,CommandLine, SW_SHOWDEFAULT  ; вызвать основную функцию
     invoke ExitProcess, rax ; Выйти из пpогpаммы.
                             ; Возвpащаемое значение, помещаемое в eax, беpется из WinMain'а.
@@ -41,9 +38,14 @@ WinMain endp
 WndProc proc hWnd:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
     LOCAL hDC:HDC    
     .if uMsg==WM_DESTROY           ; если пользователь закpывает окно
+        invoke DestroyMenu,hPopupMenu
         invoke SetThreadExecutionState,ES_CONTINUOUS
         invoke PostQuitMessage,NULL ; выходим из пpогpаммы
     .elseif uMsg==WM_CREATE
+        invoke CreatePopupMenu
+        mov hPopupMenu,rax  ;Создаём pop-up меню для взаимодействия через трей
+           invoke AppendMenuA,hPopupMenu,MF_STRING,IDM_RESTORE,addr RestoreString
+           invoke AppendMenuA,hPopupMenu,MF_STRING,IDM_EXIT,addr ExitString
         ;Запрещаем переход в сон и отключение дисплея
         invoke SetThreadExecutionState,ES_CONTINUOUS or ES_SYSTEM_REQUIRED or ES_DISPLAY_REQUIRED
         .if rax ==-1
