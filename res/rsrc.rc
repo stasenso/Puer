@@ -1,0 +1,40 @@
+// *************************************************************************************************
+
+#include "\masm64\include64\resource.h"
+
+// *************************************************************************************************
+
+1 24 "manifest.xml"    // manifest file
+
+#include "dlgs.rc"
+
+// *************************************************************************************************
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION 1, 0, 0, 0
+PRODUCTVERSION 1, 0, 0, 0
+FILEOS VOS__WINDOWS32
+FILETYPE VFT_APP
+BEGIN
+  BLOCK "StringFileInfo"
+BEGIN
+  BLOCK "041904B0"
+  BEGIN
+    VALUE "CompanyName",      "Friends of Svetopaper\000"
+    VALUE "FileDescription",  "Pu'er tea executable file\000"
+    VALUE "FileVersion",      "1.0\000"
+    VALUE "InternalName",     "Pu'er tea\000"
+    VALUE "OriginalFilename", "Puer.exe\000"
+    VALUE "LegalCopyright",   "\251 2025 Friends of Svetopaper\000"
+    VALUE "ProductName",      "Pu'er tea\000"
+    VALUE "ProductVersion",   "1.0\000"
+  END
+END
+
+BLOCK "VarFileInfo"
+BEGIN
+  VALUE "Translation", 0x419, 0x4B0
+END
+END
+
+// *************************************************************************************************

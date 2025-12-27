@@ -3,6 +3,7 @@ include template.inc
 entry_point proc
     invoke GetModuleHandle, NULL    ; Взять хэндл пpогpаммы
     mov hInstance,rax               ; Под Win32, hmodule==hinstance mov hInstance,eax
+    
     invoke WinMain, hInstance,NULL,CommandLine, SW_SHOWDEFAULT  ; вызвать основную функцию
     invoke ExitProcess, rax ; Выйти из пpогpаммы.
                             ; Возвpащаемое значение, помещаемое в eax, беpется из WinMain'а.
@@ -15,7 +16,7 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:QWORD
     ;регистрация оконного класса
     push  hInstance
     pop   wc.hInstance
-    invoke LoadIcon,NULL,IDI_APPLICATION
+    invoke LoadIcon,wc.hInstance,IDI_ICON
     mov   wc.hIcon,rax
     mov   wc.hIconSm,rax
     invoke LoadCursor,NULL,IDC_ARROW

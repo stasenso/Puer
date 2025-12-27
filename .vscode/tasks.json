@@ -1,56 +1,72 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
-    "version":"2.0.0",
-    "tasks":[
+    "version": "2.0.0",
+    "tasks": [
         {
-            "label":"assemble",
-            "type":"shell",
-            "args":[
+            "label": "assemble",
+            "type": "shell",
+            "command": "ml64.exe",
+            "args": [
                 "/I",
                 "include",
                 "/c",
                 "src/${fileBasenameNoExtension}.asm"
-
             ],
-            "command":"ml64.exe",
-            "problemMatcher":{
-                "owner":"nasm",
-                "fileLocation":["relative","${workspaceFolder}"],
-                "pattern":{
-                    "regexp":"^(.*)\\((\\d*)\\)\\s+:?\\s+(error|warning)\\s+([A-z]+\\d+):\\s+(.*)$",
-                    "file":1,
-                    "line":2,
-                    "severity":3,
-                    "code":4,
-                    "message":5,
-                    "loop":true
+            "problemMatcher": {
+                "owner": "masm",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}"
+                ],
+                "pattern": {
+                    "regexp": "^(.*)\\((\\d*)\\)\\s+:?\\s+(error|warning)\\s+([A-Z]+\\d+):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "code": 4,
+                    "message": 5
                 }
             }
         },
+                {
+            "label": "compile-resources",
+            "type": "shell",
+            "command": "rc.exe",
+            "args": [
+                "res/rsrc.rc"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+             "dependsOn": [
+                "assemble"]
+        },
         {
-            "label":"link",
-            "type":"shell",
-            "args":[
+            "label": "link",
+            "type": "shell",
+            "command": "link.exe",
+            "args": [
                 "/SUBSYSTEM:WINDOWS",
                 "/MACHINE:X64",
                 "/ENTRY:entry_point",
                 "/nologo",
                 "/LARGEADDRESSAWARE",
-                "${fileBasenameNoExtension}.obj"
-        ],
-        "command":"link.exe",
-        "dependsOn":"assemble"
+                "${fileBasenameNoExtension}.obj",
+                "res/rsrc.res"
+            ],
+            "dependsOn": [
+                "compile-resources",
+                "assemble"
+            ]
         },
         {
-            "label":"execute",
-            "type":"shell",
-            "command":"${workspaceFolder}/${fileBasenameNoExtension}.exe",
-            "group":{
-                "kind":"build",
-                "isDefault":true
-            },
-            "dependsOn":"link"
+            "label": "execute",
+            "type": "shell",
+            "command": "${workspaceFolder}/${fileBasenameNoExtension}.exe",
+            "group": "build",
+            "dependsOn": "link",
+            "problemMatcher": []
         }
     ]
 }

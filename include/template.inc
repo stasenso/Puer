@@ -10,7 +10,7 @@ myDraw proto nSegment:DWORD ;принимаю параметр с колличе
 .data?
 hInstance HINSTANCE ?   ; Хэндл нашей пpогpаммы
 CommandLine LPSTR ?
-
+hIcon dq ?    ; icon handle
 
 NOTIFYICONDATAW STRUCT
   cbSize            DWORD      ?
@@ -78,3 +78,4 @@ IDM_RESTORE equ 1000
 
 IDM_EXIT equ 1010
 
+IDI_ICON equ 1020
