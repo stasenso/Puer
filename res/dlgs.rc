@@ -1,8 +1,8 @@
 
 #define IDI_ICON 1020
-
+#define IDI_ICON2 1030
 IDI_ICON ICON  "icon.ico"
-
+IDI_ICON2 ICON  "icon2.ico"
 
 
 
