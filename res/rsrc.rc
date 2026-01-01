@@ -21,7 +21,7 @@ BEGIN
   BLOCK "041904B0"
   BEGIN
     VALUE "CompanyName",      "Friends of Svetopaper\000"
-    VALUE "FileDescription",  "Pu'er tea executable file\000"
+    VALUE "FileDescription",  "Pu'er tea: no sleeping on the job!\000"
     VALUE "FileVersion",      "1.0\000"
     VALUE "InternalName",     "Pu'er tea\000"
     VALUE "OriginalFilename", "Puer.exe\000"

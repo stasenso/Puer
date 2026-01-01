@@ -27,7 +27,7 @@
                 }
             }
         },
-                {
+        {
             "label": "compile-resources",
             "type": "shell",
             "command": "rc.exe",
@@ -35,12 +35,10 @@
                 "res/rsrc.rc"
             ],
             "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-             "dependsOn": [
-                "assemble"]
+            "group": "build",
+            "dependsOn": [
+                "assemble"
+            ]
         },
         {
             "label": "link",
@@ -64,7 +62,10 @@
             "label": "execute",
             "type": "shell",
             "command": "${workspaceFolder}/${fileBasenameNoExtension}.exe",
-            "group": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "dependsOn": "link",
             "problemMatcher": []
         }

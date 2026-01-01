@@ -6,6 +6,8 @@ WinMain proto :HINSTANCE,:HINSTANCE,:LPSTR,:QWORD
 
 myPaint proto :HWND ;Обработка сообщения WM_PAINT
 myDraw proto nSegment:DWORD ;принимаю параметр с колличеством сегментов (в HIWORD) и номером данного сегмента (в LOWORD) 
+
+WM_SHELLNOTIFY equ WM_USER+5
 ;_______________________________________________________
 .data?
 hInstance HINSTANCE ?   ; Хэндл нашей пpогpаммы
@@ -14,11 +16,11 @@ hIcon dq ?    ; icon handle
 
 NOTIFYICONDATAW STRUCT
   cbSize            DWORD      ?
-  hwnd              DWORD      ?
+  hwnd              QWORD      ?
   uID               DWORD      ?
   uFlags            DWORD      ?
   uCallbackMessage  DWORD      ?
-  hIcon             DWORD      ?
+  hIcon             QWORD      ?
   szTip             WORD 64 dup (?)
                     WORD 64 dup (?)
   dwState           DWORD      ?
@@ -31,7 +33,7 @@ NOTIFYICONDATAW STRUCT
   szInfoTitle       WORD 64 dup(?)
   dwInfoFlags       DWORD      ?
   guidItem          GUID <>
-  hBalloonIcon      DWORD      ?
+  hBalloonIcon      QWORD      ?
 NOTIFYICONDATAW ENDS
 
 BITMAPINFOHEADER STRUCT
@@ -57,14 +59,12 @@ BITMAPINFO STRUCT
   bmiHeader  BITMAPINFOHEADER <>
   bmiColors  RGBQUAD <>
 BITMAPINFO ENDS
-
-note NOTIFYICONDATAW <>
 hPopupMenu dq ?
 
 ;_______________________________________________________
 .data
 szClassName db "CocaClass",0 ; Имя нашего класса окна
-AppName db "Cocaine - no sleeping on the job!",0 ; Имя нашего окна
+AppName db "Pu'er tea: no sleeping on the job!",0 ; Имя нашего окна
 ELAPSE_UPDTIMER EQU 20
 IDT_UPDTIMER    EQU 111
 wc  WNDCLASSEX <sizeof WNDCLASSEX,CS_HREDRAW or CS_VREDRAW,WndProc,0,0,?,?,?,COLOR_WINDOW+1,NULL,szClassName,?>
@@ -72,7 +72,7 @@ bmi BITMAPINFO <>
 rc RECT <>
 RestoreString db "&Restore",0
 ExitString   db "E&xit Program",0
-
+note NOTIFYICONDATAW <>
 IDI_TRAY equ 0
 IDM_RESTORE equ 1000
 
