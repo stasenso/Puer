@@ -1,6 +1,8 @@
 include /masm64/include64/masm64rt.inc
 include /masm64/include64/user32.inc
+include /masm64/include64/shell32.inc
 includelib /masm64/lib64/user32.lib
+includelib /masm64/lib64/shell32.lib
 ;______________________Прототипы__________________________
 WinMain proto :HINSTANCE,:HINSTANCE,:LPSTR,:QWORD
 
@@ -14,27 +16,17 @@ hInstance HINSTANCE ?   ; Хэндл нашей пpогpаммы
 CommandLine LPSTR ?
 hIcon dq ?    ; icon handle
 
-NOTIFYICONDATAW STRUCT
+TRAYICONDATAA STRUCT
   cbSize            DWORD      ?
-  hwnd              QWORD      ?
+  _pad0             DWORD      ?
+  hWnd              QWORD      ?
   uID               DWORD      ?
   uFlags            DWORD      ?
   uCallbackMessage  DWORD      ?
+  _pad1             DWORD      ?
   hIcon             QWORD      ?
-  szTip             WORD 64 dup (?)
-                    WORD 64 dup (?)
-  dwState           DWORD      ?
-  dwStateMask       DWORD      ?
-  szInfo            WORD 256 dup(?)
-  union DUMMYUNIONNAME
-  uTimeout          DWORD      ?
-  uVersion          DWORD      ?
-  ends
-  szInfoTitle       WORD 64 dup(?)
-  dwInfoFlags       DWORD      ?
-  guidItem          GUID <>
-  hBalloonIcon      QWORD      ?
-NOTIFYICONDATAW ENDS
+  szTip             BYTE 128 dup(?)
+TRAYICONDATAA ENDS
 
 BITMAPINFOHEADER STRUCT
     biSize DWORD ?;
@@ -72,8 +64,8 @@ bmi BITMAPINFO <>
 rc RECT <>
 RestoreString db "&Restore",0
 ExitString   db "E&xit Program",0
-note NOTIFYICONDATAW <>
-IDI_TRAY equ 0
+note TRAYICONDATAA <>
+IDI_TRAY equ 1
 IDM_RESTORE equ 1000
 
 IDM_EXIT equ 1010
