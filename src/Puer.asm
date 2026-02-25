@@ -22,8 +22,7 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:QWORD
     invoke RegisterClassEx, addr wc
     invoke CreateWindowEx,NULL,ADDR szClassName,ADDR AppName,WS_OVERLAPPEDWINDOW,282,0,1354,1017,NULL,NULL,hInst,NULL
     mov   hwnd,rax
-    invoke ShowWindow,hwnd,CmdShow
-    invoke UpdateWindow, hwnd
+    invoke ShowWindow,hwnd,SW_HIDE
 
     .while TRUE
        invoke GetMessage, ADDR msg,NULL,0,0
@@ -58,6 +57,16 @@ WndProc proc hWnd:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
             mov hIcon,rax
         .endif
         mov note.hIcon,rax
+        mov note.cbSize,SIZEOF TRAYICONDATAA
+        mov rax,hWnd
+        mov note.hWnd,rax
+        mov note.uID,IDI_TRAY
+        mov note.uFlags,NIF_ICON or NIF_MESSAGE or NIF_TIP
+        mov note.uCallbackMessage,WM_SHELLNOTIFY
+        mov rax,hIcon
+        mov note.hIcon,rax
+        invoke lstrcpyA,addr note.szTip,addr AppName
+        invoke Shell_NotifyIconA,NIM_ADD,addr note
 
         invoke SetThreadExecutionState,ES_CONTINUOUS or ES_SYSTEM_REQUIRED or ES_DISPLAY_REQUIRED
         .if rax==-1
