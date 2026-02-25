@@ -60,6 +60,7 @@ WndProc proc hWnd:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
         .if rax ==-1
             invoke PostQuitMessage,NULL ; выходим из пpогpаммы
         .else
+            mov sleepBlockEnabled,1
             mov rax,0
             ret
         .endif
@@ -79,6 +80,36 @@ WndProc proc hWnd:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
             .if rax==0
             .else
                 invoke ShowWindow,hWnd,SW_HIDE
+            .endif
+        .endif
+        mov rax,0
+        ret
+    .elseif uMsg==WM_SHELLNOTIFY
+        .if wParam==IDI_TRAY
+            .if lParam==WM_LBUTTONDBLCLK
+                .if sleepBlockEnabled==1
+                    invoke SetThreadExecutionState,ES_CONTINUOUS
+                    invoke LoadIcon,hInstance,IDI_ICON2
+                    .if rax==0
+                        invoke LoadIcon,NULL,IDI_APPLICATION
+                    .endif
+                    mov hIcon,rax
+                    mov note.hIcon,rax
+                    mov note.uFlags,NIF_ICON
+                    invoke Shell_NotifyIconA,NIM_MODIFY,addr note
+                    mov sleepBlockEnabled,0
+                .else
+                    invoke SetThreadExecutionState,ES_CONTINUOUS or ES_SYSTEM_REQUIRED or ES_DISPLAY_REQUIRED
+                    invoke LoadIcon,hInstance,IDI_ICON
+                    .if rax==0
+                        invoke LoadIcon,NULL,IDI_APPLICATION
+                    .endif
+                    mov hIcon,rax
+                    mov note.hIcon,rax
+                    mov note.uFlags,NIF_ICON
+                    invoke Shell_NotifyIconA,NIM_MODIFY,addr note
+                    mov sleepBlockEnabled,1
+                .endif
             .endif
         .endif
         mov rax,0
@@ -111,3 +142,5 @@ myPaint proc hWndPaint:HWND
 myPaint endp
 
 end
+
+

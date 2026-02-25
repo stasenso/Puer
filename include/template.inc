@@ -14,7 +14,8 @@ WM_SHELLNOTIFY equ WM_USER+5
 .data?
 hInstance HINSTANCE ?   ; Хэндл нашей пpогpаммы
 CommandLine LPSTR ?
-hIcon dq ?    ; icon handle
+hIcon dq ?
+sleepBlockEnabled dq ?
 
 TRAYICONDATAA STRUCT
   cbSize            DWORD      ?
@@ -71,3 +72,4 @@ IDM_RESTORE equ 1000
 IDM_EXIT equ 1010
 
 IDI_ICON equ 1020
+IDI_ICON2 equ 1030
