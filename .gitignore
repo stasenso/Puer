@@ -13,3 +13,4 @@
 *.vsix
 *.obj
 *.res
+res/rsrc.res
