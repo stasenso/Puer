@@ -19,8 +19,8 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:QWORD
     mov   wc.hIconSm,rax
     invoke LoadCursor,NULL,IDC_ARROW
     mov   wc.hCursor,rax
-    invoke RegisterClassEx, addr wc
-    invoke CreateWindowEx,NULL,ADDR szClassName,ADDR AppName,WS_OVERLAPPEDWINDOW,282,0,1354,1017,NULL,NULL,hInst,NULL
+    invoke RegisterClassExW, addr wc
+    invoke CreateWindowExW,NULL,ADDR szClassName,ADDR AppName,WS_OVERLAPPEDWINDOW,282,0,1354,1017,NULL,NULL,hInst,NULL
     mov   hwnd,rax
     invoke ShowWindow,hwnd,SW_HIDE
 
@@ -38,9 +38,11 @@ WinMain endp
 WndProc proc hWnd:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
     LOCAL hDC:HDC
     LOCAL pt:POINT
+    LOCAL trayMsg:DWORD
+    LOCAL trayId:DWORD
 
     .if uMsg==WM_DESTROY
-        invoke Shell_NotifyIconA,NIM_DELETE,addr note
+        invoke Shell_NotifyIconW,NIM_DELETE,addr note
         invoke DestroyMenu,hPopupMenu
         invoke SetThreadExecutionState,ES_CONTINUOUS
         invoke PostQuitMessage,NULL
@@ -48,7 +50,10 @@ WndProc proc hWnd:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
     .elseif uMsg==WM_CREATE
         invoke CreatePopupMenu
         mov hPopupMenu,rax
-        invoke AppendMenuA,hPopupMenu,MF_STRING,IDM_EXIT,addr ExitString
+        invoke AppendMenuW,hPopupMenu,MF_STRING,IDM_DISABLESLEEP,addr DisableSleep
+        invoke AppendMenuW,hPopupMenu,MF_STRING,IDM_ENABLESLEEP,addr EnableSleep
+        invoke AppendMenuW,hPopupMenu,MF_SEPARATOR,0,NULL
+        invoke AppendMenuW,hPopupMenu,MF_STRING,IDM_EXIT,addr ExitString
 
         invoke LoadIcon,hInstance,IDI_ICON
         mov hIcon,rax
@@ -57,16 +62,18 @@ WndProc proc hWnd:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
             mov hIcon,rax
         .endif
         mov note.hIcon,rax
-        mov note.cbSize,SIZEOF TRAYICONDATAA
+        mov note.cbSize,SIZEOF NOTIFYICONDATAW
         mov rax,hWnd
         mov note.hWnd,rax
         mov note.uID,IDI_TRAY
-        mov note.uFlags,NIF_ICON or NIF_MESSAGE or NIF_TIP
+        mov note.uFlags,NIF_ICON or NIF_MESSAGE or NIF_TIP or NIF_SHOWTIP
         mov note.uCallbackMessage,WM_SHELLNOTIFY
         mov rax,hIcon
         mov note.hIcon,rax
-        invoke lstrcpyA,addr note.szTip,addr AppName
-        invoke Shell_NotifyIconA,NIM_ADD,addr note
+        invoke lstrcpynW,addr note.szTip,addr AppName,128
+        invoke Shell_NotifyIconW,NIM_ADD,addr note
+        mov note.uTimeoutOrVersion,NOTIFYICON_VERSION_4
+        invoke Shell_NotifyIconW,NIM_SETVERSION,addr note
 
         invoke SetThreadExecutionState,ES_CONTINUOUS or ES_SYSTEM_REQUIRED or ES_DISPLAY_REQUIRED
         .if rax==-1
@@ -79,16 +86,18 @@ WndProc proc hWnd:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 
     .elseif uMsg==WM_SIZE
         .if wParam==SIZE_MINIMIZED
-            mov note.cbSize,SIZEOF TRAYICONDATAA
+            mov note.cbSize,SIZEOF NOTIFYICONDATAW
             mov rax,hWnd
             mov note.hWnd,rax
             mov note.uID,IDI_TRAY
-            mov note.uFlags,NIF_ICON or NIF_MESSAGE or NIF_TIP
+            mov note.uFlags,NIF_ICON or NIF_MESSAGE or NIF_TIP or NIF_SHOWTIP
             mov note.uCallbackMessage,WM_SHELLNOTIFY
             mov rax,hIcon
             mov note.hIcon,rax
-            invoke lstrcpyA,addr note.szTip,addr AppName
-            invoke Shell_NotifyIconA,NIM_ADD,addr note
+            invoke lstrcpynW,addr note.szTip,addr AppName,128
+            invoke Shell_NotifyIconW,NIM_ADD,addr note
+            mov note.uTimeoutOrVersion,NOTIFYICON_VERSION_4
+            invoke Shell_NotifyIconW,NIM_SETVERSION,addr note
             .if rax==0
             .else
                 invoke ShowWindow,hWnd,SW_HIDE
@@ -98,8 +107,16 @@ WndProc proc hWnd:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
         ret
 
     .elseif uMsg==WM_SHELLNOTIFY
-        .if wParam==IDI_TRAY
-            .if lParam==WM_LBUTTONDBLCLK
+        mov rax,lParam
+        mov edx,eax
+        and edx,0FFFFh
+        mov trayMsg,edx
+        shr eax,16
+        and eax,0FFFFh
+        mov trayId,eax
+
+        .if trayId==IDI_TRAY
+            .if trayMsg==WM_LBUTTONDBLCLK
                 .if sleepBlockEnabled==1
                     invoke SetThreadExecutionState,ES_CONTINUOUS
                     invoke LoadIcon,hInstance,IDI_ICON2
@@ -108,8 +125,9 @@ WndProc proc hWnd:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
                     .endif
                     mov hIcon,rax
                     mov note.hIcon,rax
-                    mov note.uFlags,NIF_ICON
-                    invoke Shell_NotifyIconA,NIM_MODIFY,addr note
+                    invoke lstrcpynW,addr note.szTip,addr AppName,128
+                    mov note.uFlags,NIF_ICON or NIF_TIP or NIF_SHOWTIP
+                    invoke Shell_NotifyIconW,NIM_MODIFY,addr note
                     mov sleepBlockEnabled,0
                 .else
                     invoke SetThreadExecutionState,ES_CONTINUOUS or ES_SYSTEM_REQUIRED or ES_DISPLAY_REQUIRED
@@ -119,12 +137,13 @@ WndProc proc hWnd:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
                     .endif
                     mov hIcon,rax
                     mov note.hIcon,rax
-                    mov note.uFlags,NIF_ICON
-                    invoke Shell_NotifyIconA,NIM_MODIFY,addr note
+                    invoke lstrcpynW,addr note.szTip,addr AppName,128
+                    mov note.uFlags,NIF_ICON or NIF_TIP or NIF_SHOWTIP
+                    invoke Shell_NotifyIconW,NIM_MODIFY,addr note
                     mov sleepBlockEnabled,1
                 .endif
 
-            .elseif lParam==WM_RBUTTONUP
+            .elseif trayMsg==WM_CONTEXTMENU
                 invoke SetForegroundWindow,hWnd
                 invoke GetCursorPos,addr pt
                 invoke TrackPopupMenu,hPopupMenu,TPM_RIGHTBUTTON,pt.x,pt.y,0,hWnd,NULL
@@ -134,7 +153,31 @@ WndProc proc hWnd:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
         ret
 
     .elseif uMsg==WM_COMMAND
-        .if wParam==IDM_EXIT
+        .if wParam==IDM_DISABLESLEEP
+            invoke SetThreadExecutionState,ES_CONTINUOUS or ES_SYSTEM_REQUIRED or ES_DISPLAY_REQUIRED
+            invoke LoadIcon,hInstance,IDI_ICON
+            .if rax==0
+                invoke LoadIcon,NULL,IDI_APPLICATION
+            .endif
+            mov hIcon,rax
+            mov note.hIcon,rax
+            invoke lstrcpynW,addr note.szTip,addr AppName,128
+            mov note.uFlags,NIF_ICON or NIF_TIP or NIF_SHOWTIP
+            invoke Shell_NotifyIconW,NIM_MODIFY,addr note
+            mov sleepBlockEnabled,1
+        .elseif wParam==IDM_ENABLESLEEP
+            invoke SetThreadExecutionState,ES_CONTINUOUS
+            invoke LoadIcon,hInstance,IDI_ICON2
+            .if rax==0
+                invoke LoadIcon,NULL,IDI_APPLICATION
+            .endif
+            mov hIcon,rax
+            mov note.hIcon,rax
+            invoke lstrcpynW,addr note.szTip,addr AppName,128
+            mov note.uFlags,NIF_ICON or NIF_TIP or NIF_SHOWTIP
+            invoke Shell_NotifyIconW,NIM_MODIFY,addr note
+            mov sleepBlockEnabled,0
+        .elseif wParam==IDM_EXIT
             invoke DestroyWindow,hWnd
         .endif
         mov rax,0
