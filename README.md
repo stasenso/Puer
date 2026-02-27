@@ -1,5 +1,5 @@
-# Cocaine -
+# Pu'er tea -
 A playful name for a low-level replacement for the Caffeine app. It works by calling SetThreadExecutionState
-# Кокаин -
+# Пуэр -
 Шутливое название для низкоуровневой замены приложения Caffeine. Работает за счёт вызова SetThreadExecutionState
 
