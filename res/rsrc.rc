@@ -22,12 +22,12 @@ BEGIN
   BEGIN
     VALUE "CompanyName",      "Friends of Svetopaper\000"
     VALUE "FileDescription",  "Pu'er tea: no sleeping on the job!\000"
-    VALUE "FileVersion",      "1.0\000"
+    VALUE "FileVersion",      "1.42\000"
     VALUE "InternalName",     "Pu'er tea\000"
     VALUE "OriginalFilename", "Puer.exe\000"
     VALUE "LegalCopyright",   "\251 2025 Friends of Svetopaper\000"
     VALUE "ProductName",      "Pu'er tea\000"
-    VALUE "ProductVersion",   "1.2\000"
+    VALUE "ProductVersion",   "1.42\000"
   END
 END
 
