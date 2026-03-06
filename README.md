@@ -1,14 +1,15 @@
-# Pu'er tea -
-A playful name for a low-level replacement for the Caffeine app. It works by calling SetThreadExecutionState
-The program is designed to keep Windows awake. After launching, it appears in the system tray in the form of a full cup of tea. From this moment on, the system will not go to sleep. 
-Double-clicking on the cup will empty it, simultaneously allowing sleep. 
-The same action can be obtained by right-clicking on the menu and selecting one of the menu items.:
-1. Ban sleep
+# Pu'er -
+A humorous name for a low-level replacement for the Caffeine application. Just for fun and to keep in shape, I wrote it in assembly using MASM64 syntax. It works by calling SetThreadExecutionState (Win32 API).
+The little program is designed to prevent Windows from going to sleep. After launching, it appears in the system tray as a full cup of tea. From that moment on, the system will not go to sleep.
+Double-clicking the cup empties it, simultaneously allowing sleep. The same action can be achieved by right-clicking to bring up the menu and selecting one of the options:
+1. Prevent sleep
 2. Allow sleep
 3. Exit
+
+
    
 # Пуэр -
-Шутливое название для низкоуровневой замены приложения Caffeine. Работает за счёт вызова SetThreadExecutionState
+Шутливое название для низкоуровневой замены приложения Caffeine. Шалости ради и для поддержки формы, написал на ассемблере в синтаксисе MASM64. Работает за счёт вызова SetThreadExecutionState (Win32API)
 Программка предназначена для того, чтобы не давать уйти windows в сон. После запуска она появляется в системном трее в виде полной чашки чая. С этого момента система не уйдёт в сон. 
 Двойной клик по чашке опустошит её, одновременно разрешив сон. 
 Этого же действие можно получить вызвав меню правой кнопкой мыши и выбрав один из пунктов меню:
